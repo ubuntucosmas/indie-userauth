@@ -65,6 +65,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "corsheaders.middleware.CorsMiddleware",    
 
@@ -135,6 +136,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }  
 DATABASES = {
     'default': dj_database_url.config(default='postgresql://indie_db_user:we38KT4tHRo51ULOEDYUznkOFJov7EMS@dpg-cqqu73ij1k6c73dmdpmg-a.oregon-postgres.render.com/indie_db')
+}
+
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
 }
 
 
