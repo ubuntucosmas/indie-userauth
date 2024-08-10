@@ -138,12 +138,7 @@ DATABASES = {
     'default': dj_database_url.config(default='postgresql://indie_db_user:we38KT4tHRo51ULOEDYUznkOFJov7EMS@dpg-cqqu73ij1k6c73dmdpmg-a.oregon-postgres.render.com/indie_db')
 }
 
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 
 
@@ -193,6 +188,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
 
 CORS_ALLOW_ALL_ORIGINS = True
