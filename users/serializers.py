@@ -30,15 +30,15 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 class UserSerializer(ModelSerializer):
     class Meta(object):
         model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'password']
 
     def save(self, **kwargs):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'email': 'Email address already exists'})
 
         new_user = User.objects.create_user(
-            firstname=self.validated_data['first_name'],
-            lastname=self.validated_data['last_name'],
+            # firstname=self.validated_data['first_name'],
+            # lastname=self.validated_data['last_name'],
             username=self.validated_data['username'],
             email=self.validated_data['email'],
             password=self.validated_data['password'],
