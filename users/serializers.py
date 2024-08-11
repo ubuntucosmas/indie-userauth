@@ -23,56 +23,31 @@ from rest_framework.authtoken.models import Token
 from rest_framework import serializers
 
 
-from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import smart_str, force_bytes
+from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 class UserSerializer(ModelSerializer):
     class Meta(object):
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = '__all__'
 
     def save(self, **kwargs):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'email': 'Email address already exists'})
 
         new_user = User.objects.create_user(
+            firstname=self.validated_data['firstname'],
+            lastname=self.validated_data['lastname'],
             username=self.validated_data['username'],
             email=self.validated_data['email'],
             password=self.validated_data['password'],
         )
         new_user.save()
         new_Token = Token.objects.create(user=new_user)
+        return new_user
+    
 
-
-
-
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password']
-
-    def save(self, **kwargs):
-        if User.objects.filter(email=self.validated_data['email']).exists():
-            raise ValidationError({'email': 'Email address already exists'})
-
-        new_user = User.objects.create_user(
-            username=self.validated_data['username'],
-            email=self.validated_data['email'],
-            password=self.validated_data['password'],
-        )
-        new_user.save()
-        new_Token = Token.objects.create(user=new_user)
-
-
-class ResetPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-
-    def validate(self, data):
-        email = data.get('email')
-        if not User.objects.filter(email=email).exists():
-            raise ValidationError({'email': 'Email address not found'})
-        return data
 
 
 class ChangePasswordSerializer(serializers.Serializer):
