@@ -37,8 +37,8 @@ class UserSerializer(ModelSerializer):
             raise ValidationError({'email': 'Email address already exists'})
 
         new_user = User.objects.create_user(
-            firstname=self.validated_data['firstname'],
-            lastname=self.validated_data['lastname'],
+            # firstname=self.validated_data['firstname'],
+            # lastname=self.validated_data['lastname'],
             username=self.validated_data['username'],
             email=self.validated_data['email'],
             password=self.validated_data['password'],
