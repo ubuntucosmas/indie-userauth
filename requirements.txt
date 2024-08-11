@@ -9,6 +9,7 @@ djangorestframework-simplejwt==5.3.1
 gunicorn==19.9.0
 Markdown==3.6
 mysqlclient==2.2.4
+pillow==10.4.0
 psycopg==3.2.1
 psycopg-binary==3.2.1
 psycopg2==2.9.9
