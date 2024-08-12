@@ -136,9 +136,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }  
 # }  
 
-# DATABASES = {
-#     'default': dj_database_url.config(default='postgresql://indie_db_cm19_user:VRd7GyG885lPHnjnIFOS5tyDKzw4sa23@dpg-cqt4lhij1k6c73btg300-a.oregon-postgres.render.com/indie_db_cm19')
-# }
+DATABASES = {
+    'default': dj_database_url.config(default='postgresql://indie_db_cm19_user:VRd7GyG885lPHnjnIFOS5tyDKzw4sa23@dpg-cqt4lhij1k6c73btg300-a.oregon-postgres.render.com/indie_db_cm19')
+}
 
 
 
