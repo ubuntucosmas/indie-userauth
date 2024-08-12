@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from rest_framework.response import Response
-from .serializers import ChangePasswordSerializer, PasswordResetConfirmSerializer, ChangePasswordSerializer, UserSerializer, PasswordResetSerializer
+from .serializers import ChangePasswordSerializer, PasswordResetConfirmSerializer, ResetPasswordSerializer, UserSerializer
 from rest_framework import status
 from rest_framework.authtoken.models import Token 
 from django.contrib.auth import authenticate, logout
@@ -93,7 +93,7 @@ def userLogout(request):
 
 @api_view(['POST'])
 def reset_password_view(request):
-    serializer = PasswordResetSerializer(data=request.data)
+    serializer = ResetPasswordSerializer(data=request.data)
     if serializer.is_valid():
         email = serializer.validated_data['email']
         # Send a password reset email to the user

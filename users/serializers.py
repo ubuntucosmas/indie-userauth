@@ -45,7 +45,7 @@ class UserSerializer(ModelSerializer):
         )
         new_user.save()
         new_Token = Token.objects.create(user=new_user)
-        return new_user
+        # return new_user
     
 
 class ChangePasswordSerializer(serializers.Serializer):
