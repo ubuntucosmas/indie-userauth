@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from django.contrib.auth.models import User
+from .models import User
 from rest_framework.response import Response
 from .serializers import ChangePasswordSerializer, PasswordResetConfirmSerializer, ResetPasswordSerializer, UserSerializer
 from rest_framework import status
@@ -27,7 +27,7 @@ def userRegister(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        user = User.objects.get(username=request.data['username'])
+        user = User.objects.get(email=request.data['email'])
         token = Token.objects.get(user=user)
 
         serializer = UserSerializer(user)
@@ -51,7 +51,7 @@ def userLogin(request):
 
     try:
         user = User.objects.get(email=email)
-        authenticate_user = authenticate(username=user.username, password=password)
+        authenticate_user = authenticate(email=user.email, password=password)
         if authenticate_user is not None:
             serializer = UserSerializer(user)
             response_data = {

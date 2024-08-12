@@ -26,10 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s3os9d2)=iit%0_@eng_r(+q*#x*1d76-sw)%a9v&-ivz1p*05'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
@@ -126,16 +127,19 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # DATABASES = {  
 #     'default': {  
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',  
-#         'NAME': 'indie_db',  
+#         'NAME': 'indie2_db',  
 #         'USER': 'postgres',  
-#         'PASSWORD': 'BwoluYnPXDHnhZVFHRfSskGSzSldFMtM',  
-#         'HOST': 'postgres.railway.internal',  
+#         'PASSWORD': 'Qwerty_1234',  
+#         'HOST': 'localhost',  
 #         'PORT': '5432',  
 #     }  
 # }  
+
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_user:we38KT4tHRo51ULOEDYUznkOFJov7EMS@dpg-cqqu73ij1k6c73dmdpmg-a.oregon-postgres.render.com/indie_db')
+    'default': dj_database_url.config(default='postgresql://indie_db_cm19_user:VRd7GyG885lPHnjnIFOS5tyDKzw4sa23@dpg-cqt4lhij1k6c73btg300-a.oregon-postgres.render.com/indie_db_cm19')
 }
+
+
 
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
