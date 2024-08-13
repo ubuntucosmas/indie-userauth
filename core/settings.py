@@ -28,7 +28,6 @@ SECRET_KEY = 'django-insecure-s3os9d2)=iit%0_@eng_r(+q*#x*1d76-sw)%a9v&-ivz1p*05
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User' #added customUserModel
@@ -137,7 +136,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }  
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_cm19_user:VRd7GyG885lPHnjnIFOS5tyDKzw4sa23@dpg-cqt4lhij1k6c73btg300-a.oregon-postgres.render.com/indie_db_cm19')
+    'default': dj_database_url.config(default='postgresql://indie_db_8car_user:GF5aGVLGoDKNuB1ecuinnudXLl9egwhl@dpg-cqtf6hij1k6c738k9n9g-a.oregon-postgres.render.com/indie_db_8car')
 }
 
 
