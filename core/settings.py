@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'knox',
     'rest_framework.authtoken',
+    'drf_yasg',
+    'rest_framework_swagger',
+    'rest_framework_simplejwt',
 ]
 
 # REST_FRAMEWORK = {

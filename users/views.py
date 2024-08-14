@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.response import Response
 from .serializers import ChangePasswordSerializer, PasswordResetConfirmSerializer, ResetPasswordSerializer, UserSerializer
-from rest_framework import status
+from rest_framework import status, response
 from rest_framework.authtoken.models import Token 
 from django.contrib.auth import authenticate, logout
 from rest_framework.decorators import authentication_classes, permission_classes
@@ -17,6 +17,13 @@ from rest_framework import serializers
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from . import serializers, models
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+import jwt
+from .utils import Util
+from rest_framework.generics import ListAPIView, GenericAPIView
 
 
 
@@ -28,15 +35,60 @@ def userRegister(request):
     if serializer.is_valid():
         serializer.save()
         user = User.objects.get(email=request.data['email'])
-        token = Token.objects.get(user=user)
-
+        # token = Token.objects.get(user=user)
         serializer = UserSerializer(user)
-        data={
-            "user": serializer.data,
-            "token": token.key
-        }
-        return Response(data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # data={
+        #     "user": serializer.data,
+        #     "token": token.key
+        # }
+        # getting tokens
+        user_email = models.User.objects.get(email=user.email)
+        tokens = RefreshToken.for_user(user_email).access_token
+        # send email for user verification
+        current_site = get_current_site(request).domain
+        relative_link = reverse('email-verify')
+        absurl = 'http://'+current_site+relative_link+"?token="+str(tokens)
+        email_body = 'Hi '+user.firstName + \
+            ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': email_body, 'to_email': user.email,
+                'email_subject': 'Verify your email'}
+
+        Util.send_email(data=data)
+
+        return response.Response({'user_data': serializer.data, 'access_token' : str(tokens)},status=status.HTTP_201_CREATED)
+
+    
+
+#-------------------------EMAIL VERIFICATION------------------------------------------------------------------------
+
+from django.conf import settings
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+class VerifyEmail(GenericAPIView ):
+    serializer_class = serializers.EmailVerificationSerializer
+
+    token_param_config = openapi.Parameter(
+        'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[token_param_config])
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, options={"verify_signature": False})
+            print(payload)
+            user = models.User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return response.Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return response.Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
  
 #=============================== LOGIN VIEW  =======================================================================
 

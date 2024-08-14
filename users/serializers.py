@@ -1,22 +1,3 @@
-# from django.contrib.auth.models import User
-# from rest_framework.serializers import ModelSerializer
-# from rest_framework.authtoken.models import Token 
-
-# class UserSerializer(ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['id', 'username', 'email', 'password']
-
-#     def save(self, **kwargs):
-#         new_user = User.objects.create_user(
-#             username=self.validated_data['username'],
-#             email=self.validated_data['email'],
-#             password=self.validated_data['password'],
-#         )
-#         new_user.save()
-#         new_Token = Token.objects.create(user=new_user)
-
-
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer, ValidationError
 from rest_framework.authtoken.models import Token
@@ -28,11 +9,15 @@ from django.utils.encoding import smart_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
-class UserSerializer(ModelSerializer):
-    class Meta():
-        model = User
-        fields = '__all__'
 
+#======================================================USERSIGNUP SERIALIZER====================================
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only =True)
+    # tokens = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'firstName', 'lastName', 'email', 'password', 'is_active' ]
     def save(self, **kwargs):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'email': 'Email address already exists'})
@@ -46,9 +31,19 @@ class UserSerializer(ModelSerializer):
         new_user.save()
         new_Token = Token.objects.create(user=new_user)
         return new_user
+    
+
+#=====================================EMAIL VERIFICATION SERIALIZER=================================================
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+    class Meta:
+        model = User
+        fields = 'token'
 
 
 
+
+#===================================================================================================================
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
@@ -67,7 +62,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         return data
 
-
+#===================================================================================================================
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
@@ -77,7 +72,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise ValidationError({'email': 'Email address not found'})
         return data
 
-
+#===================================================================================================================
 class PasswordResetConfirmSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
     confirm_password = serializers.CharField(required=True)
