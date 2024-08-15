@@ -10,7 +10,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 
-#======================================================USERSIGNUP SERIALIZER====================================
+#=====================================USERSIGNUP SERIALIZER=========================================================
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only =True)

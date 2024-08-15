@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.response import Response
@@ -24,6 +24,7 @@ from django.urls import reverse
 import jwt
 from .utils import Util
 from rest_framework.generics import ListAPIView, GenericAPIView
+from rest_framework.renderers import TemplateHTMLRenderer
 
 
 
@@ -81,7 +82,7 @@ class VerifyEmail(GenericAPIView ):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return response.Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return redirect('https://indiearts.art/login')
         except jwt.ExpiredSignatureError as identifier:
             return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:

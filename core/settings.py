@@ -127,20 +127,20 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }  
 # }  
 
-# DATABASES = {  
-#     'default': {  
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',  
-#         'NAME': 'indie2_db',  
-#         'USER': 'postgres',  
-#         'PASSWORD': 'Qwerty_1234',  
-#         'HOST': 'localhost',  
-#         'PORT': '5432',  
-#     }  
-# }  
+DATABASES = {  
+    'default': {  
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+        'NAME': 'indie2_db',  
+        'USER': 'postgres',  
+        'PASSWORD': 'Qwerty_1234',  
+        'HOST': 'localhost',  
+        'PORT': '5432',  
+    }  
+}  
 
-DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a.oregon-postgres.render.com/indie_db_7jmy')
-}
+# DATABASES = {
+#     'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a.oregon-postgres.render.com/indie_db_7jmy')
+# }
 
 
 
