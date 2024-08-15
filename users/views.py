@@ -92,7 +92,7 @@ class VerifyEmail(GenericAPIView ):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return redirect('https://indiearts.art/redirect')
+            return redirect('https://indie-userauth.onrender.com//redirect')
         except jwt.ExpiredSignatureError as identifier:
             return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
