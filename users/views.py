@@ -34,7 +34,7 @@ def successVerification(request):
     <html>
         <body>
             <h1>Welcome!</h1>
-            <p>Email verification successful!.. click this link to login <a href="https://indiearts.art/login">here</a> to visit our website.</p>
+            <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
         </body>
     </html>"""
     return HttpResponse(html_content)
