@@ -29,6 +29,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from django.http import HttpResponse
 
 # Create your views here.
+<<<<<<< HEAD
 #----------------------------SOCIAL AUTH----------------------------------------------------------------------------
 
 
@@ -49,6 +50,17 @@ def successVerification(request):
         </body>
     </html>"""
     return HttpResponse(html_content)
+=======
+# def successVerification(request):
+#     html_content ="""
+#     <html>
+#         <body>
+#             <h1>Welcome!</h1>
+#             <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
+#         </body>
+#     </html>"""
+#     return HttpResponse(html_content)
+>>>>>>> c6836c6b1fa08da0f40bc930f7b697f6daa8b638
 
 #=================================USERSIGNUP=======================================================================
 
