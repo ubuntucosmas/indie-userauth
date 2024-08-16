@@ -29,15 +29,15 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from django.http import HttpResponse
 
 # Create your views here.
-def successVerification(request):
-    html_content ="""
-    <html>
-        <body>
-            <h1>Welcome!</h1>
-            <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
-        </body>
-    </html>"""
-    return HttpResponse(html_content)
+# def successVerification(request):
+#     html_content ="""
+#     <html>
+#         <body>
+#             <h1>Welcome!</h1>
+#             <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
+#         </body>
+#     </html>"""
+#     return HttpResponse(html_content)
 
 
 @api_view(["POST"])
@@ -92,7 +92,7 @@ class VerifyEmail(GenericAPIView ):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return redirect('https://indie-userauth.onrender.com//redirect')
+            return redirect('https://indiearts.art/login')
         except jwt.ExpiredSignatureError as identifier:
             return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
