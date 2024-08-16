@@ -50,20 +50,13 @@ def successVerification(request):
     </html>"""
     return HttpResponse(html_content)
 #===================================================================================================================
-# def successVerification(request):
-#     html_content ="""
-#     <html>
-#         <body>
-#             <h1>Welcome!</h1>
-#             <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
-#         </body>
-#     </html>"""
-#     return HttpResponse(html_content)
-
-#=================================USERSIGNUP=======================================================================
 
 @api_view(["POST"])
 def userRegister(request):
+    # Check if the email already exists
+    if User.objects.filter(email=request.data['email']).exists():
+        return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
