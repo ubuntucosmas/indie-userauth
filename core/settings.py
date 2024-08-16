@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s3os9d2)=iit%0_@eng_r(+q*#x*1d76-sw)%a9v&-ivz1p*05'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -35,6 +35,7 @@ AUTH_USER_MODEL = 'users.User' #added customUserModel
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +47,6 @@ INSTALLED_APPS = [
     'events.apps.EventsConfig',
     'rest_framework',
     'corsheaders',
-    'knox',
     'rest_framework.authtoken',
     'drf_yasg',
     'rest_framework_swagger',
@@ -209,7 +209,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cosmasasango12@gmail.com'
 EMAIL_HOST_PASSWORD = 'xprh ppwi szdg uxvc'
 DEFAULT_FROM_EMAIL = 'cosmasasango12@gmail.com'
-
 
 
 
