@@ -139,7 +139,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }  
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a.oregon-postgres.render.com/indie_db_7jmy')
+    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a/indie_db_7jmy')
 }
 
 
