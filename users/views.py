@@ -29,26 +29,6 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from django.http import HttpResponse
 
 # Create your views here.
-#----------------------------SOCIAL AUTH----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-#===================================================================================================================
-def successVerification(request):
-    html_content ="""
-    <html>
-        <body>
-            <h1>Welcome!</h1>
-            <p>Email verification successful!.. click <a href="https://indiearts.art/login">here</a> to visit our website.</p>
-        </body>
-    </html>"""
-    return HttpResponse(html_content)
 #===================================================================================================================
 
 @api_view(["POST"])
@@ -61,15 +41,12 @@ def userRegister(request):
     if serializer.is_valid():
         serializer.save()
         user = User.objects.get(email=request.data['email'])
-        # token = Token.objects.get(user=user)
+        
         serializer = UserSerializer(user)
-        # data={
-        #     "user": serializer.data,
-        #     "token": token.key
-        # }
-        # getting tokens
+
         user_email = models.User.objects.get(email=user.email)
         tokens = RefreshToken.for_user(user_email).access_token
+        
         # send email for user verification
         current_site = get_current_site(request).domain
         relative_link = reverse('email-verify')
