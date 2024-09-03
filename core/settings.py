@@ -42,14 +42,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    #my apps
     'users.apps.UsersConfig',
     'events.apps.EventsConfig',
+    'payments.apps.PaymentsConfig',
+
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',
     'drf_yasg',
-    'rest_framework_swagger',
+    'drf_spectacular',
+    # 'rest_framework_swagger',
     'rest_framework_simplejwt',
 ]
 
@@ -64,13 +67,23 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'PROJECT INDIE',
+    'DESCRIPTION': 'ARTISTS AND ART',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
 
-    "corsheaders.middleware.CorsMiddleware",    
+      
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -85,7 +98,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -139,8 +152,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }  
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a.oregon-postgres.render.com/indie_db_7jmy')
+    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a/indie_db_7jmy')
 }
+
 
 
 
@@ -187,8 +201,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -203,12 +220,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'cosmasasango12@gmail.com'
-EMAIL_HOST_PASSWORD = 'xprh ppwi szdg uxvc'
-DEFAULT_FROM_EMAIL = 'cosmasasango12@gmail.com'
+EMAIL_HOST_USER = 'george@indiearts.art'
+EMAIL_HOST_PASSWORD = 'Fay9FCuuLHny'
+DEFAULT_FROM_EMAIL = 'george@indiearts.art'
 
 
 

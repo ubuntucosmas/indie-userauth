@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.response import Response
@@ -27,17 +27,11 @@ from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 
 from django.http import HttpResponse
+from rest_framework import generics, status
+from rest_framework.views import APIView
 
 # Create your views here.
 #----------------------------SOCIAL AUTH----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
 
 #===================================================================================================================
 def successVerification(request):
@@ -51,37 +45,37 @@ def successVerification(request):
     return HttpResponse(html_content)
 #===================================================================================================================
 
-@api_view(["POST"])
-def userRegister(request):
-    # Check if the email already exists
-    if User.objects.filter(email=request.data['email']).exists():
-        return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+class UserRegisterView(generics.GenericAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        user = User.objects.get(email=request.data['email'])
-        # token = Token.objects.get(user=user)
-        serializer = UserSerializer(user)
-        # data={
-        #     "user": serializer.data,
-        #     "token": token.key
-        # }
-        # getting tokens
-        user_email = models.User.objects.get(email=user.email)
-        tokens = RefreshToken.for_user(user_email).access_token
-        # send email for user verification
-        current_site = get_current_site(request).domain
-        relative_link = reverse('email-verify')
-        absurl = 'http://'+current_site+relative_link+"?token="+str(tokens)
-        email_body = 'Hi '+user.firstName + \
-            ' Use the link below to verify your email \n' + absurl
-        data = {'email_body': email_body, 'to_email': user.email,
-                'email_subject': 'Verify your email'}
+    def post(self, request, *args, **kwargs):
+        # Check if the email already exists
+        if User.objects.filter(email=request.data['email']).exists():
+            return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-        Util.send_email(data=data)
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user = User.objects.get(email=request.data['email'])
+            serializer = UserSerializer(user)
 
-        return response.Response({'user_data': serializer.data, 'access_token' : str(tokens)},status=status.HTTP_201_CREATED)
+            user_email = User.objects.get(email=user.email)
+            tokens = RefreshToken.for_user(user_email).access_token
+            # send email for user verification
+            current_site = get_current_site(request).domain
+            relative_link = reverse('email-verify')
+            absurl = 'http://'+current_site+relative_link+"?token="+str(tokens)
+            email_body = 'Hi '+user.first_name + \
+                ' Use the link below to verify your email \n' + absurl
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Verify your email'}
+
+            Util.send_email(data=data)
+
+            return Response({'user_data': serializer.data, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
+
+        return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST)
 
     
 
@@ -91,7 +85,7 @@ from django.conf import settings
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-class VerifyEmail(GenericAPIView ):
+class VerifyEmail(GenericAPIView):
     serializer_class = serializers.EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
@@ -118,54 +112,63 @@ class VerifyEmail(GenericAPIView ):
  
 #=============================== LOGIN VIEW  =======================================================================
 
-@api_view(["POST"])
-def userLogin(request):
-    data = request.data
-    email = data.get('email')
-    password = data.get('password')
+class UserLoginView(APIView):
+    serializer_class = UserSerializer
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        email = data.get('email')
+        password = data.get('password')
 
-    if not email or not password:
-        return Response({"detail": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not password:
+            return Response({"detail": "Invalid request"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        user = User.objects.get(email=email)
-        authenticate_user = authenticate(email=user.email, password=password)
-        if authenticate_user is not None:
-            serializer = UserSerializer(user)
-            response_data = {
-                "user": serializer.data,
-            }
-            token, created = Token.objects.get_or_create(user=user)
-            response_data['token'] = token.key
-            return Response(response_data)
-        else:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-    except User.DoesNotExist:
-        return Response({"detail": "User with this email does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            user = User.objects.get(email=email)
+            authenticate_user = authenticate(email=user.email, password=password)
+            if authenticate_user is not None:
+                serializer = UserSerializer(user)
+                response_data = {
+                    "user": serializer.data,
+                }
+                token, created = Token.objects.get_or_create(user=user)
+                response_data['token'] = token.key
+                return Response(response_data)
+            else:
+                return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return Response({"detail": "User with this email does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #=============================== TEST VIEW =========================================================================
 
 
-@api_view(["GET"])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def testview(request):
-    return Response({"message":"test view"})
+# @api_view(["GET"])
+# @authentication_classes([SessionAuthentication, TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+# def testview(request):
+#     return Response({"message":"test view"})
+# class TestView(GenericAPIView):
+#     authentication_classes = [SessionAuthentication, TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, *args, **kwargs):
+#         return Response({"message": "test view"})
 
 #==============================   LOGOUT VIEW ======================================================================
-@api_view(["POST"])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def userLogout(request):
-    try:
-        request.user.auth_token.delete()
-        logout(request)
-        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class UserLogoutView(APIView):
+    serializer_class = UserSerializer
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            request.user.auth_token.delete()  # Delete the user's token
+            logout(request)  # Log the user out
+            return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
  #################################################################################################################   
 
@@ -204,17 +207,17 @@ def password_reset_confirm_view(request):
 
 #################################################################################################
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def change_password_view(request):
-    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
-    if serializer.is_valid():
-        old_password = serializer.validated_data['old_password']
-        new_password = serializer.validated_data['new_password']
-        request.user.set_password(new_password)
-        request.user.save()
-        return Response({'message': 'Password changed successfully'})
-    return Response(serializer.errors, status=400)
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def change_password_view(request):
+#     serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+#     if serializer.is_valid():
+#         old_password = serializer.validated_data['old_password']
+#         new_password = serializer.validated_data['new_password']
+#         request.user.set_password(new_password)
+#         request.user.save()
+#         return Response({'message': 'Password changed successfully'})
+#     return Response(serializer.errors, status=400)
 
 
 

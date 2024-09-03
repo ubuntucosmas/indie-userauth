@@ -14,17 +14,25 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only =True)
+    firstName = serializers.CharField(source='first_name')
+    lastName = serializers.CharField(source='last_name')
     # tokens = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['id', 'firstName', 'lastName', 'email', 'password', 'is_active' ]
+    
+    # def validate_password(self, value):
+    #     if len(value) < 8:
+    #         raise ValidationError("Password must be at least 8 characters long.")
+    #     return value
+    
     def save(self, **kwargs):
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise ValidationError({'email': 'Email address already exists'})
 
         new_user = User.objects.create_user(
-            firstName=self.validated_data['firstName'],
-            lastName=self.validated_data['lastName'],
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
             password=self.validated_data['password'],
         )
@@ -38,7 +46,7 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=555)
     class Meta:
         model = User
-        fields = 'token'
+        fields = ['token']
 
 
 
