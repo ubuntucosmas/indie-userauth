@@ -14,8 +14,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only =True)
-    firstName = serializers.CharField(source='firstName')
-    lastName = serializers.CharField(source='lastName')
+    # firstName = serializers.CharField(source='firstName')
+    # lastName = serializers.CharField(source='lastName')
     # tokens = serializers.SerializerMethodField()
     class Meta:
         model = User
