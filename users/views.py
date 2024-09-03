@@ -33,14 +33,6 @@ from rest_framework.views import APIView
 # Create your views here.
 #----------------------------SOCIAL AUTH----------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
 #===================================================================================================================
 def successVerification(request):
     html_content ="""
@@ -57,36 +49,33 @@ class UserRegisterView(generics.GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+
     def post(self, request, *args, **kwargs):
         # Check if the email already exists
         if User.objects.filter(email=request.data['email']).exists():
             return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user = User.objects.get(email=request.data['email'])
+            
+            serializer = UserSerializer(user)
 
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        user = User.objects.get(email=request.data['email'])
-        # token = Token.objects.get(user=user)
-        serializer = UserSerializer(user)
-        # data={
-        #     "user": serializer.data,
-        #     "token": token.key
-        # }
-        # getting tokens
-        user_email = models.User.objects.get(email=user.email)
-        tokens = RefreshToken.for_user(user_email).access_token
-        # send email for user verification
-        current_site = get_current_site(request).domain
-        relative_link = reverse('email-verify')
-        absurl = 'http://'+current_site+relative_link+"?token="+str(tokens)
-        email_body = 'Hi '+user.firstName + \
-            ' Use the link below to verify your email \n' + absurl
-        data = {'email_body': email_body, 'to_email': user.email,
-                'email_subject': 'Verify your email'}
+            user_email = models.User.objects.get(email=user.email)
+            tokens = RefreshToken.for_user(user_email).access_token
+            
+            # send email for user verification
+            current_site = get_current_site(request).domain
+            relative_link = reverse('email-verify')
+            absurl = 'http://'+current_site+relative_link+"?token="+str(tokens)
+            email_body = 'Hi '+user.firstName + \
+                ' Use the link below to verify your email \n' + absurl
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Verify your email'}
 
-            Util.send_email(data=data)
+        Util.send_email(data=data)
 
-            return Response({'user_data': serializer.data, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
+        return Response({'user_data': serializer.data, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
 
         return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST)
 
