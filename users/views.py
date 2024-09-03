@@ -73,9 +73,9 @@ class UserRegisterView(generics.GenericAPIView):
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Verify your email'}
 
-        Util.send_email(data=data)
+            Util.send_email(data=data)
 
-        return Response({'user_data': serializer.data, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
+            return Response({'user_data': serializer.data, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
 
         return Response({'error': 'Invalid request method'}, status=status.HTTP_400_BAD_REQUEST)
 
