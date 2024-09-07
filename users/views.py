@@ -92,14 +92,15 @@ class UserRegisterView(generics.GenericAPIView):
 
 from django.conf import settings
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
-@method_decorator(csrf_exempt, name='dispatch') 
 class VerifyEmail(GenericAPIView):
     serializer_class = serializers.EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
+    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
         try:
