@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #my apps
     'users.apps.UsersConfig',
-    'events.apps.EventsConfig',
 
     'rest_framework',
     'corsheaders',
@@ -188,7 +187,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }  
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://indie_db_7jmy_user:t4UEHOfUFoVz8CQlPf7eH2JIRhIW9B0y@dpg-cqucff2j1k6c73dtrcog-a.oregon-postgres.render.com/indie_db_7jmy')
+    'default': dj_database_url.config(default='postgresql://indie_db_u82t_user:LioeI7EnDljpKMs1LoEUi9C0GBZTQnig@dpg-crecg1lsvqrc73fi4qdg-a.singapore-postgres.render.com/indie_db_u82t')
 }
 
 
