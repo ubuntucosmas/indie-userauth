@@ -11,9 +11,11 @@ from rest_framework.routers import DefaultRouter
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-   #  path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('', include('users.urls')),
-    path('', include('events.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path("accounts/", include("allauth.urls")),
+
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema')),
+    path('', include('users.urls')),
+    path('', include('events.urls')),
 ]

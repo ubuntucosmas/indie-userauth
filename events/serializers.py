@@ -6,6 +6,16 @@ from users.serializers import UserSerializer
 
 
 
+
+
+from .models import MpesaTransaction
+
+class MpesaTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MpesaTransaction
+        fields = '__all__'
+
+
 class EventSerializer(serializers.ModelSerializer):
     # owner = UserSerializer(many=True)
     class Meta:

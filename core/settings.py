@@ -32,6 +32,10 @@ ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User' #added customUserModel
 
+SITE_ID = 3
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,16 +49,52 @@ INSTALLED_APPS = [
     #my apps
     'users.apps.UsersConfig',
     'events.apps.EventsConfig',
-    'payments.apps.PaymentsConfig',
 
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',
     'drf_yasg',
     'drf_spectacular',
-    # 'rest_framework_swagger',
     'rest_framework_simplejwt',
+
+    'dj_rest_auth',
+
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        "SCOPE":[
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+
+        },
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': False,
+    }
+}
+
+
+#setting the adapter:
+ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'users.adapters.CustomSocialAccountAdapter'
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -80,10 +120,13 @@ MIDDLEWARE = [
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -218,6 +261,20 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'george@indiearts.art'
 EMAIL_HOST_PASSWORD = 'Fay9FCuuLHny'
 DEFAULT_FROM_EMAIL = 'george@indiearts.art'
+
+
+
+
+
+# Custom User settings
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 
 

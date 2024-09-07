@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.response import Response
@@ -26,12 +26,17 @@ from .utils import Util
 from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.renderers import TemplateHTMLRenderer
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework import generics, status
 from rest_framework.views import APIView
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
 #----------------------------SOCIAL AUTH----------------------------------------------------------------------------
+# def home(request):
+#     return render(request, './users/login.html')
 
 #===================================================================================================================
 def successVerification(request):
@@ -43,8 +48,10 @@ def successVerification(request):
         </body>
     </html>"""
     return HttpResponse(html_content)
-#===================================================================================================================
 
+
+#---------------------------------------USER REGISTER OR SIGNUP-----------------------------------------------------
+@method_decorator(csrf_exempt, name='dispatch') 
 class UserRegisterView(generics.GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -85,15 +92,14 @@ class UserRegisterView(generics.GenericAPIView):
 
 from django.conf import settings
 from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 
+@method_decorator(csrf_exempt, name='dispatch') 
 class VerifyEmail(GenericAPIView):
     serializer_class = serializers.EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
 
-    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -114,6 +120,7 @@ class VerifyEmail(GenericAPIView):
  
 #=============================== LOGIN VIEW  =======================================================================
 
+@method_decorator(csrf_exempt, name='dispatch') 
 class UserLoginView(APIView):
     serializer_class = UserSerializer
     def post(self, request, *args, **kwargs):
@@ -143,22 +150,8 @@ class UserLoginView(APIView):
             return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-#=============================== TEST VIEW =========================================================================
-
-
-# @api_view(["GET"])
-# @authentication_classes([SessionAuthentication, TokenAuthentication])
-# @permission_classes([IsAuthenticated])
-# def testview(request):
-#     return Response({"message":"test view"})
-# class TestView(GenericAPIView):
-#     authentication_classes = [SessionAuthentication, TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, *args, **kwargs):
-#         return Response({"message": "test view"})
-
 #==============================   LOGOUT VIEW ======================================================================
+@method_decorator(csrf_exempt, name='dispatch')
 class UserLogoutView(APIView):
     serializer_class = UserSerializer
     authentication_classes = [SessionAuthentication, TokenAuthentication]
@@ -221,10 +214,75 @@ def password_reset_confirm_view(request):
 #         return Response({'message': 'Password changed successfully'})
 #     return Response(serializer.errors, status=400)
 
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+# @method_decorator(csrf_exempt, name='dispatch')
+# class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
+#     adapter_class = GoogleOAuth2Adapter
+#     callback_url = 'http://127.0.0.1:8000/accounts/google/login/callback/'
+#     client_class = OAuth2Client
+
+# class GoogleLogin(SocialLoginView): # if you want to use Implicit Grant, use this
+#     adapter_class = GoogleOAuth2Adapter
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+import requests
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 
+  # Get your custom user model
+
+class GoogleLogin(APIView):
+    def post(self, request):
+        token = request.data.get('id_token')
+
+        if not token:
+            return Response({'error': 'No ID token provided'}, status=400)
+
+        response = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token}")
+
+        if response.status_code != 200:
+            return Response({'error': 'Invalid token'}, status=400)
+
+        user_info = response.json()
+        email = user_info.get('email')
+        first_name = user_info.get('given_name')
+        last_name = user_info.get('family_name')
+
+        user, created = get_user_model().objects.get_or_create(email=email)
+
+        if created:
+            user.firstName = first_name
+            user.lastName = last_name
+            user.is_active = True 
+            user.is_verified = True
+            user.save()
+            # send_verification_email(user, request)
+
+        if not user.is_active:
+            return Response({'error': 'Email not verified. Please check your inbox.'}, status=403)
+
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+
+    
 
 
-
+     
+    

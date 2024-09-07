@@ -1,4 +1,5 @@
 from core import settings
+# from users.views import send_verification_email
 from .models import User
 
 from django.db.models.signals import post_save
@@ -15,3 +16,5 @@ def send_welcome_email(sender, instance, created, **kwargs):
         recipient_list = [instance.email]
         
         send_mail(subject, message, from_email, recipient_list)
+
+
