@@ -54,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class fileUpload(models.Model):
      name = models.CharField(_('firstName'), max_length=30)
      pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)
+     infor_graphic = models.ImageField(null=True, blank=True,upload_to='images/')
 
 
      def __str__(self):
