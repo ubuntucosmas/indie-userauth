@@ -3,23 +3,23 @@ from .models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import EmailMessage
+from email.mime.image import MIMEImage  # Import for embedding images
 import os
 
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
     if created:  # Only send the email when a new user is created
-        subject = 'Welcome to Our INDIE!'
+        subject = 'Welcome to INDIE!'
         
         # HTML message with embedded image at the bottom
         html_message = (f'<p>Hi there! Invest in Art. Projected: 10 - 12% Return on Investment within a month. '
                         'More info attached.</p>'
                         '<p>INDIE is Art, and Art is Popping.</p>'
                         '<p>Best regards,<br>INDIE Team</p>'
-                        '<p><img src="cid:welcome_image" alt="Welcome Image" style="width:300px;height:auto;"></p>')  # Embedding the image
+                        '<p><img src="cid:infor" alt="Welcome Image" style="width:300px;height:auto;"></p>')  # Embedding the image
 
         # Fallback plain-text version for email clients that don't support HTML
-        plain_message = (f"Hi {instance.firstName},\n\n"
-                         "Hi there! Invest in Art. Projected: 10 - 12% Return on Investment within a month.\n"
+        plain_message = (f"Hi there! Invest in Art. Projected: 10 - 12% Return on Investment within a month.\n"
                          "More info attached.\n\n"
                          "INDIE is Art, and Art is Popping.\n\n"
                          "Best regards,\nINDIE Team")
@@ -42,14 +42,14 @@ def send_welcome_email(sender, instance, created, **kwargs):
         image_path = os.path.join(settings.MEDIA_ROOT, 'images', 'infor.png')  # Adjust this path as needed
 
         # Path to the PDF file to attach
-        pdf_path = os.path.join(settings.MEDIA_ROOT, 'pdfs', 'infor.png')
+        pdf_path = os.path.join(settings.MEDIA_ROOT, 'pdfs', 'welcome.pdf')
 
         # Embed the image in the email if it exists
         if os.path.exists(image_path):
             with open(image_path, 'rb') as img:
-                email.attach('infor.png', img.read(), 'image/png')
-                email.attachments[-1]['Content-ID'] = '<infor>'  # Embed with Content-ID
-                email.attachments[-1]['Content-Disposition'] = 'inline'  # Make sure it's inline
+                mime_image = MIMEImage(img.read())
+                mime_image.add_header('Content-ID', '<infor>')  # Set Content-ID to use in the HTML
+                email.attach(mime_image)
 
         # Attach the PDF file if it exists
         if os.path.exists(pdf_path):
@@ -57,6 +57,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
 
         # Send the email
         email.send()
+
 
 
 
