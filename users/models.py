@@ -50,3 +50,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.firstName} {self.lastName}"
     
+
+class fileUpload(models.Model):
+     name = models.CharField(_('firstName'), max_length=30)
+     pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)
+
+
+     def __str__(self):
+        return self.name
