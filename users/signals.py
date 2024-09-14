@@ -12,7 +12,9 @@ def send_welcome_email(sender, instance, created, **kwargs):
         subject = 'Welcome to INDIE!'
         
         # HTML message with embedded image at the bottom
-        html_message = (f'<p>Hi there! Invest in Art. Projected: 10 - 12% Return on Investment within a month. '
+        html_message = (f'<p>Hi there!'
+                        '<p>Invest in Art.</p>'
+                        '<p>Projected: 10 - 12% Return on Investment within a month.</p>'
                         'More info attached.</p>'
                         '<p>INDIE is Art, and Art is Popping.</p>'
                         '<p>Best regards,<br>INDIE Team</p>'

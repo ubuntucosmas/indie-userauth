@@ -32,8 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User' #added customUserModel
 
-SITE_ID = 6
-
+SITE_ID = 3
 
 
 # Application definition
@@ -250,6 +249,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'george@indiearts.art'
 EMAIL_HOST_PASSWORD = 'Fay9FCuuLHny'
 DEFAULT_FROM_EMAIL = 'george@indiearts.art'
+
+FRONTEND_URL= 'https://indiearts.art/'
 
 
 

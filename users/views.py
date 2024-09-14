@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view
 from .models import User
 from rest_framework.response import Response
-from .serializers import ChangePasswordSerializer, PasswordResetConfirmSerializer, ResetPasswordSerializer, UserSerializer
+from .serializers import PasswordResetConfirmSerializer, ResetPasswordSerializer, UserSerializer
 from rest_framework import status, response
 from rest_framework.authtoken.models import Token 
 from django.contrib.auth import authenticate, logout
@@ -165,17 +165,73 @@ class UserLogoutView(APIView):
             return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
     
- #################################################################################################################   
+ #----------------------------------------PASSWORDRESET------------------------------------------------------------   
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth.forms import PasswordResetForm
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.core.mail import send_mail
 
 @api_view(['POST'])
 def reset_password_view(request):
+    # Serializer to validate the email field
     serializer = ResetPasswordSerializer(data=request.data)
     if serializer.is_valid():
         email = serializer.validated_data['email']
-        # Send a password reset email to the user
-        return Response({'message': 'Password reset email sent'})
+        
+        # Check if a user with the email exists
+        associated_users = User.objects.filter(email=email)
+        if associated_users.exists():
+            for user in associated_users:
+                # Generate a password reset token
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                # Create a password reset URL
+                reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}"
+                
+                # Prepare the email context
+                context = {
+                    'email': user.email,
+                    'domain': settings.FRONTEND_URL,  # Your frontend domain
+                    'site_name': 'INDIE',
+                    'uid': uid,
+                    'user': user,
+                    'token': token,
+                    'reset_url': reset_url,
+                }
+                
+                # Render the email template with the context
+                subject = "Password Reset Requested"
+                email_template_name = "registration/password_reset_email.txt"  # You can also use HTML emails
+                email_body = render_to_string(email_template_name, context)
+                
+                # Send the email
+                send_mail(subject, email_body, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+            return Response({'message': 'Password reset email sent'}, status=200)
+        
+        return Response({'message': 'No user is associated with this email'}, status=400)
+
     return Response(serializer.errors, status=400)
+
+
+# @api_view(['POST'])
+# def reset_password_view(request):
+#     serializer = ResetPasswordSerializer(data=request.data)
+#     if serializer.is_valid():
+#         email = serializer.validated_data['email']
+#         # Send a password reset email to the user
+#         return Response({'message': 'Password reset email sent'})
+#     return Response(serializer.errors, status=400)
 ###################################################################################################################
 
 
@@ -215,9 +271,9 @@ def password_reset_confirm_view(request):
 #         return Response({'message': 'Password changed successfully'})
 #     return Response(serializer.errors, status=400)
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+# from dj_rest_auth.registration.views import SocialLoginView
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
