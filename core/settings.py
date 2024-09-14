@@ -251,7 +251,7 @@ EMAIL_HOST_USER = 'george@indiearts.art'
 EMAIL_HOST_PASSWORD = 'Fay9FCuuLHny'
 DEFAULT_FROM_EMAIL = 'george@indiearts.art'
 
-FRONTEND_URL= 'https://indiearts.art/NewPassword' #for password reset
+FRONTEND_URL= 'https://indiearts.art' #for password reset
 
 
 

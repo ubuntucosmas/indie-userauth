@@ -196,7 +196,7 @@ def reset_password_view(request):
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 
                 # Create a password reset URL
-                reset_url = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}"
+                reset_url = f"{settings.FRONTEND_URL}/NewPassword/{uid}/{token}"
                 
                 # Prepare the email context
                 context = {
