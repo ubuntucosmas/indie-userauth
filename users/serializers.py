@@ -82,7 +82,7 @@ class ResetPasswordSerializer(serializers.Serializer):
 #===================================================================================================================
 class PasswordResetConfirmSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
-    confirm_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=False)
     token = serializers.CharField(required=True)
     uidb64 = serializers.CharField(required=True)
 

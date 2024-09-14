@@ -26,13 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s3os9d2)=iit%0_@eng_r(+q*#x*1d76-sw)%a9v&-ivz1p*05'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User' #added customUserModel
 
-SITE_ID = 3
+SITE_ID = 7
 
 
 
@@ -251,7 +251,7 @@ EMAIL_HOST_USER = 'george@indiearts.art'
 EMAIL_HOST_PASSWORD = 'Fay9FCuuLHny'
 DEFAULT_FROM_EMAIL = 'george@indiearts.art'
 
-FRONTEND_URL= 'https://indiearts.art/'
+FRONTEND_URL= 'https://indiearts.art/NewPassword' #for password reset
 
 
 
