@@ -235,27 +235,15 @@ def reset_password_view(request):
 ###################################################################################################################
 
 
-@api_view(['POST'])
-def password_reset_confirm_view(request):
-    serializer = PasswordResetConfirmSerializer(data=request.data)
-    if serializer.is_valid():
-        password = serializer.validated_data['password']
-        confirm_password = serializer.validated_data['confirm_password']
-        token = serializer.validated_data['token']
-        uidb64 = serializer.validated_data['uidb64']
-        try:
-            uid = force_bytes(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise ValidationError({'uidb64': 'Invalid user ID'})
-
-        if not PasswordResetTokenGenerator().check_token(user, token):
-            raise ValidationError({'token': 'Invalid token'})
-
-        user.set_password(password)
-        user.save()
-        return Response({'message': 'Password reset successfully'})
-    return Response(serializer.errors, status=400)
+class PasswordResetConfirmView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+        
+        return Response({'message': 'Password reset failed', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 #################################################################################################
 

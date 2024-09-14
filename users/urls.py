@@ -12,7 +12,7 @@ urlpatterns = [
     re_path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
     re_path('redirect/', views.successVerification, name="redirect"),
     re_path('resetpassword', views.reset_password_view, name='resetpassword'),
-    re_path('resetconfirm', views.password_reset_confirm_view, name='resetconfirm'),
+    re_path('resetconfirm', views.PasswordResetConfirmView.as_view(), name='resetconfirm'),
     # re_path('changepassword', views.change_password_view, name='changepassword'),
     
     

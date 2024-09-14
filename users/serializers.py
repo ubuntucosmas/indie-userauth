@@ -6,7 +6,7 @@ from .models import User
 
 from django.utils.encoding import smart_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.tokens import default_token_generator
 
 
 #=====================================USERSIGNUP SERIALIZER=========================================================
@@ -81,30 +81,33 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 #===================================================================================================================
 class PasswordResetConfirmSerializer(serializers.Serializer):
-    password = serializers.CharField(required=True)
-    confirm_password = serializers.CharField(required=False)
-    token = serializers.CharField(required=True)
-    uidb64 = serializers.CharField(required=True)
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField()
 
     def validate(self, data):
-        password = data.get('password')
-        confirm_password = data.get('confirm_password')
+        uid = data.get('uid')
         token = data.get('token')
-        uidb64 = data.get('uidb64')
+        new_password = data.get('new_password')
 
         try:
-            uid = force_bytes(urlsafe_base64_decode(uidb64))
+            uid = urlsafe_base64_decode(uid).decode()
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise ValidationError({'uidb64': 'Invalid user ID'})
+            raise serializers.ValidationError("Invalid user.")
 
-        if not PasswordResetTokenGenerator().check_token(user, token):
-            raise ValidationError({'token': 'Invalid token'})
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError("Invalid or expired token.")
 
-        if password != confirm_password:
-            raise ValidationError({'confirm_password': 'Passwords do not match'})
+        return {
+            'user': user,
+            'new_password': new_password
+        }
 
-        user.set_password(password)
+    def save(self):
+        user = self.validated_data['user']
+        new_password = self.validated_data['new_password']
+        user.set_password(new_password)
         user.save()
-        return data
+        return user
         
