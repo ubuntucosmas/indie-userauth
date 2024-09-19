@@ -9,3 +9,7 @@ from .serializers import EventSerializer
 class EventListCreateView(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+
+        # Pass request context for handling image URLs in serializer
+    def get_serializer_context(self):
+        return {'request': self.request}
