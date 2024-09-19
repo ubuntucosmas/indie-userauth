@@ -10,6 +10,9 @@ class EventListCreateView(generics.ListCreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
+    def get_queryset(self):
+        return Event.objects.all().order_by('-created_at')
+
         # Pass request context for handling image URLs in serializer
     def get_serializer_context(self):
         return {'request': self.request}
