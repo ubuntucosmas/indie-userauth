@@ -7,7 +7,7 @@ class EventSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
         model = Event
-        fields = ['id', 'name', 'desc', 'venue','image','date','ticketLink']
+        fields = ['id', 'name', 'desc', 'venue','image','date','ticketLink','time']
 
     def get_image(self, obj):
         request = self.context.get('request')
