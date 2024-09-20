@@ -7,7 +7,7 @@ class Event(models.Model):
     date = models.DateField(blank=True, null=True)
     time = models.TimeField(blank=True, null=True)
     image = models.ImageField(upload_to='event_images/', blank=True, null=True)
-    ticketLink = models.URLField(max_length=1000,blank=True, null=True)
+    ticketLink = models.URLField(max_length=2000,blank=True, null=True)
     desc = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True)
     # ticketPrice = models.DecimalField(max_digits=10, decimal_places=2)
